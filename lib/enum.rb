@@ -1,24 +1,41 @@
 module Enumerable
   def my_each
-    for e in self
-      yield e if block_given?
+    if self.respond_to?(:keys)
+      for i in 0..self.keys.length - 1
+        yield(self[self.keys[i]])
+      end
+    else
+      for i in 0..self.count - 1
+        yield(self[i], i)
+      end
     end
-
   end
 
-  def my_each_with_index &block
-    i = 0
-    for e in self
-      yield(e, i) if block_given?
-      i+=1
+  def my_each_with_index
+    if self.respond_to?(:keys)
+      for i in 0..self.keys.length - 1
+        yield(self.keys[i], self[self.keys[i]])
+      end
+    else
+      for i in 0..self.count - 1
+        yield(self[i], i)
+      end
     end
   end
 
   def my_select
-    self.my_each do  | i |
-      yield i if block_given?
-
+    if self.respond_to?(:keys)
+      result = Hash.new
+      for i in 0..self.keys.length - 1
+        if yield(self[self.keys[i]]) then result[self.keys[i]] = self[self.keys[i]] end
+      end
+    else
+      result = Array.new
+      for i in 0..self.count - 1
+        if yield(self[i]) then result.push(self[i]) end
+      end
     end
+    return result
   end
 
   def my_all?
@@ -40,7 +57,6 @@ module Enumerable
     end
     false
   end
-
 
   def my_none?
     return false unless block_given?
@@ -64,14 +80,12 @@ module Enumerable
   end
 
   def my_map
-
     new_arr = Array.new
-    self.my_each { |e| new_arr.push(yield e) if block_given?}
+    self.my_each { |e| new_arr.push(yield e) if block_given? }
     new_arr
   end
-
 end
 
-arr = [12,3,4,5,65]
+arr = [12, 3, 4, 5, 65]
 
-puts arr.my_none? { |i| i  == 12}
+puts arr.my_none? { |i| i == 12 }
