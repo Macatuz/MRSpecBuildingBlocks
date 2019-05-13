@@ -1,4 +1,4 @@
-require "../lib/enum"
+require_relative "../lib/enum"
 
 RSpec.describe Enumerable do
   context "my_count" do
